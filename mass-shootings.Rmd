@@ -12,7 +12,7 @@ library(knitr)        # load functions for formatting tables
 
 # get data from rcfss package
 # install latest version if not already installed
-# devtools::install_github("uc-cfss/rcfss")
+devtools::install_github("uc-cfss/rcfss")
 library(rcfss)
 
 # load the data
@@ -23,42 +23,89 @@ mass_shootings
 ## Generate a data frame that summarizes the number of mass shootings per year. Print the data frame as a formatted `kable()` table.
 
 ```{r}
-
+case_by_year <- count(mass_shootings, year)
+kable(case_by_year)
 ```
 
 ## Generate a bar chart that identifies the number of mass shooters associated with each race category. The bars should be sorted from highest to lowest.
 
 ```{r}
-
+ggplot(mass_shootings, aes(x = fct_infreq(race))) +
+  geom_bar()
 ```
 
 ## Generate a boxplot visualizing the number of total victims, by type of location. Redraw the same plot, but remove the Las Vegas Strip massacre from the dataset.
 
 ```{r}
+ggplot(mass_shootings, aes(x = location_type, y = total_victims)) +
+  geom_boxplot()
 
+shootings_noLVS <- filter(mass_shootings, location != "Las Vegas, NV")
+ggplot(shootings_noLVS, aes(x = location_type, y = total_victims)) +
+  geom_boxplot()
 ```
 
 ## How many white males with prior signs of mental illness initiated a mass shooting after 2000?
 
 ```{r}
-
+mass_shootings %>%
+  filter(male == TRUE, prior_mental_illness == 'Yes', race == "White", year > 2000) %>%
+  count()
 ```
 
 ## Which month of the year has the most mass shootings? Generate a bar chart sorted in chronological order to provide evidence of your answer.
 
 ```{r}
+month_levels <- c(
+  "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep",
+  "Oct", "Nov", "Dec"
+)
 
+mass_shootings %>%
+mutate(month = factor(month, levels = month_levels)) %>%
+  ggplot(aes(x = month)) +
+  geom_bar()
 ```
+
+The months of the year with the most mass shootings are February and June.
 
 ## How does the distribution of mass shooting fatalities differ between white and black shooters? What about white and latino shooters?
 
 ```{r}
+mass_shootings %>%
+  filter(race == "White" | race == "Black") %>%
+  ggplot(aes(x = race, y = fatalities)) +
+  geom_boxplot()
 
+mass_shootings %>%
+  filter(race == "White" | race == "Latino") %>%
+  ggplot(aes(x = race, y = fatalities)) +
+  geom_boxplot()
+    
 ```
+The spread of fatalities caused by White shooters is much bigger than the spread caused by Black and Latino shooters.
 
 ## Are mass shootings with shooters suffering from mental illness different from mass shootings with no signs of mental illness in the shooter? Assess the relationship between mental illness and total victims, mental illness and race, and the intersection of all three variables.
 
 ```{r}
+mass_shootings %>%
+  filter(!is.na(prior_mental_illness)) %>%
+  ggplot(aes(x = prior_mental_illness, y = total_victims)) +
+  geom_boxplot()
+
+mass_shootings %>%
+  filter(!is.na(prior_mental_illness), !is.na(race)) %>%
+  ggplot(aes(x = race)) +
+  geom_bar() +
+  facet_grid(~prior_mental_illness) +
+  coord_flip()
+
+mass_shootings %>%
+  filter(!is.na(prior_mental_illness), !is.na(race)) %>%
+  ggplot(aes(x = race, y = total_victims)) +
+  geom_boxplot() +
+  facet_grid(~prior_mental_illness) +
+  coord_flip()
 
 ```
 
