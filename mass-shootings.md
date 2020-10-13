@@ -8,14 +8,14 @@ Benjamin Soltoff
 library(tidyverse)    # load tidyverse packages, including ggplot2
 ```
 
-    ## -- Attaching packages ----------------------------------------------------------- tidyverse 1.3.0 --
+    ## -- Attaching packages ---------------------------------------------------------- tidyverse 1.3.0 --
 
     ## v ggplot2 3.3.2     v purrr   0.3.4
     ## v tibble  3.0.3     v dplyr   1.0.2
     ## v tidyr   1.1.2     v stringr 1.4.0
     ## v readr   1.3.1     v forcats 0.5.0
 
-    ## -- Conflicts -------------------------------------------------------------- tidyverse_conflicts() --
+    ## -- Conflicts ------------------------------------------------------------- tidyverse_conflicts() --
     ## x dplyr::filter() masks stats::filter()
     ## x dplyr::lag()    masks stats::lag()
 
@@ -62,52 +62,57 @@ mass_shootings
 
 ``` r
 case_by_year <- count(mass_shootings, year)
-kable(case_by_year)
+kable(case_by_year, col.names = c("Year", "# of Shootings"))
 ```
 
-| year |  n |
-| ---: | -: |
-| 1982 |  1 |
-| 1984 |  2 |
-| 1986 |  1 |
-| 1987 |  1 |
-| 1988 |  1 |
-| 1989 |  2 |
-| 1990 |  1 |
-| 1991 |  3 |
-| 1992 |  2 |
-| 1993 |  4 |
-| 1994 |  1 |
-| 1995 |  1 |
-| 1996 |  1 |
-| 1997 |  2 |
-| 1998 |  3 |
-| 1999 |  5 |
-| 2000 |  1 |
-| 2001 |  1 |
-| 2003 |  1 |
-| 2004 |  1 |
-| 2005 |  2 |
-| 2006 |  3 |
-| 2007 |  4 |
-| 2008 |  3 |
-| 2009 |  4 |
-| 2010 |  1 |
-| 2011 |  3 |
-| 2012 |  7 |
-| 2013 |  5 |
-| 2014 |  4 |
-| 2015 |  7 |
-| 2016 |  6 |
-| 2017 | 11 |
-| 2018 | 12 |
-| 2019 |  7 |
+| Year | \# of Shootings |
+| ---: | --------------: |
+| 1982 |               1 |
+| 1984 |               2 |
+| 1986 |               1 |
+| 1987 |               1 |
+| 1988 |               1 |
+| 1989 |               2 |
+| 1990 |               1 |
+| 1991 |               3 |
+| 1992 |               2 |
+| 1993 |               4 |
+| 1994 |               1 |
+| 1995 |               1 |
+| 1996 |               1 |
+| 1997 |               2 |
+| 1998 |               3 |
+| 1999 |               5 |
+| 2000 |               1 |
+| 2001 |               1 |
+| 2003 |               1 |
+| 2004 |               1 |
+| 2005 |               2 |
+| 2006 |               3 |
+| 2007 |               4 |
+| 2008 |               3 |
+| 2009 |               4 |
+| 2010 |               1 |
+| 2011 |               3 |
+| 2012 |               7 |
+| 2013 |               5 |
+| 2014 |               4 |
+| 2015 |               7 |
+| 2016 |               6 |
+| 2017 |              11 |
+| 2018 |              12 |
+| 2019 |               7 |
 
 ## Generate a bar chart that identifies the number of mass shooters associated with each race category. The bars should be sorted from highest to lowest.
 
 ``` r
 ggplot(mass_shootings, aes(x = fct_infreq(race))) +
-  geom_bar()
+  geom_bar() +
+  labs(
+    title = "Number of Mass Shooters per Race",
+    x = "Race",
+    y = "Number of Mass Shooters"
+    )
 ```
 
 ![](mass-shootings_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
@@ -116,7 +121,12 @@ ggplot(mass_shootings, aes(x = fct_infreq(race))) +
 
 ``` r
 ggplot(mass_shootings, aes(x = location_type, y = total_victims)) +
-  geom_boxplot()
+  geom_boxplot() +
+  labs(
+    title = "Total # of victims by location, with Las Vegas Strip outlier)",
+    x = "Type of Location",
+    y = "Total Number of Victims"
+  )
 ```
 
 ![](mass-shootings_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
@@ -124,7 +134,12 @@ ggplot(mass_shootings, aes(x = location_type, y = total_victims)) +
 ``` r
 shootings_noLVS <- filter(mass_shootings, location != "Las Vegas, NV")
 ggplot(shootings_noLVS, aes(x = location_type, y = total_victims)) +
-  geom_boxplot()
+  geom_boxplot() +
+  labs(
+    title = "Total # of victims by location, without outlier",
+    x = "Type of Location",
+    y = "Total Number of Victims"
+  )
 ```
 
 ![](mass-shootings_files/figure-gfm/unnamed-chunk-4-2.png)<!-- -->
@@ -142,6 +157,9 @@ mass_shootings %>%
     ##   <int>
     ## 1    20
 
+There were 20 white males with prior signs of mental illnes who
+initiated a mass shooting after 2000.
+
 ## Which month of the year has the most mass shootings? Generate a bar chart sorted in chronological order to provide evidence of your answer.
 
 ``` r
@@ -153,7 +171,12 @@ month_levels <- c(
 mass_shootings %>%
 mutate(month = factor(month, levels = month_levels)) %>%
   ggplot(aes(x = month)) +
-  geom_bar()
+  geom_bar() +
+  labs(
+    title = "# of Mass Shootings per Month of the Year",
+    x = "Month",
+    y = "Number of Mass Shootings"
+  )
 ```
 
 ![](mass-shootings_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
@@ -167,7 +190,12 @@ June.
 mass_shootings %>%
   filter(race == "White" | race == "Black") %>%
   ggplot(aes(x = race, y = fatalities)) +
-  geom_boxplot()
+  geom_boxplot() +
+  labs(
+    title = "Number of Mass Shooting Fatalities for White and Black Shooters",
+    x = "Race",
+    y = "# of Fatalities"
+  )
 ```
 
 ![](mass-shootings_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
@@ -176,12 +204,18 @@ mass_shootings %>%
 mass_shootings %>%
   filter(race == "White" | race == "Latino") %>%
   ggplot(aes(x = race, y = fatalities)) +
-  geom_boxplot()
+  geom_boxplot() +
+  labs(
+    title = "Number of Mass Shooting Fatalities for White and Latino Shooters",
+    x = "Race",
+    y = "# of Fatalities"
+  )
 ```
 
-![](mass-shootings_files/figure-gfm/unnamed-chunk-7-2.png)<!-- --> The
-spread of fatalities caused by White shooters is much bigger than the
-spread caused by Black and Latino shooters.
+![](mass-shootings_files/figure-gfm/unnamed-chunk-7-2.png)<!-- -->
+
+The spread of fatalities caused by White shooters is much bigger than
+the spread caused by Black and Latino shooters.
 
 ## Are mass shootings with shooters suffering from mental illness different from mass shootings with no signs of mental illness in the shooter? Assess the relationship between mental illness and total victims, mental illness and race, and the intersection of all three variables.
 
@@ -189,7 +223,12 @@ spread caused by Black and Latino shooters.
 mass_shootings %>%
   filter(!is.na(prior_mental_illness)) %>%
   ggplot(aes(x = prior_mental_illness, y = total_victims)) +
-  geom_boxplot()
+  geom_boxplot() +
+  labs(
+    title = "Number of Total Victims if Prior Mental Illness",
+    x = "Prior Mental Illness?",
+    y = "# of Total Victims"
+  )
 ```
 
 ![](mass-shootings_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
@@ -200,7 +239,12 @@ mass_shootings %>%
   ggplot(aes(x = race)) +
   geom_bar() +
   facet_grid(~prior_mental_illness) +
-  coord_flip()
+  coord_flip() +
+  labs(
+    title = "# Mass shooting incidents per race, divided by prior mental illness",
+    x = "# of Mass Shooting Incidents",
+    y = "Race"
+  )
 ```
 
 ![](mass-shootings_files/figure-gfm/unnamed-chunk-8-2.png)<!-- -->
@@ -211,10 +255,27 @@ mass_shootings %>%
   ggplot(aes(x = race, y = total_victims)) +
   geom_boxplot() +
   facet_grid(~prior_mental_illness) +
-  coord_flip()
+  coord_flip() +
+  labs(
+    title = "Distribution of total # of victims per race, divided by prior mental illness",
+    x = "# Total Victims",
+    y = "Race"
+  )
 ```
 
 ![](mass-shootings_files/figure-gfm/unnamed-chunk-8-3.png)<!-- -->
+
+The first graph, a box plot, shows that the shootings in which the
+perpetrator had prior mental illness had a higher number and a higher
+spread of total victims. The second graph, a bar chart, counted the
+shooting cases per race in which the perpetrator had prior mental
+illness, then the cases per race without prior mental illness. For all
+races, the number of shootings after a prior history of mental illness
+was perceptibly higher. For white perpetrators, the difference is even
+more noticeable. The third graph, another box plot, shows that the
+number of total victims is higher when there is history of prior mental
+illness for all races. Again, the difference is more noticeable among
+white perpetrators.
 
 ## Session info
 
@@ -232,7 +293,7 @@ devtools::session_info()
     ##  collate  English_United States.1252  
     ##  ctype    English_United States.1252  
     ##  tz       America/Chicago             
-    ##  date     2020-10-08                  
+    ##  date     2020-10-12                  
     ## 
     ## - Packages -------------------------------------------------------------------
     ##  package     * version date       lib source                        
@@ -313,5 +374,5 @@ devtools::session_info()
     ##  xml2          1.3.2   2020-04-23 [1] CRAN (R 4.0.2)                
     ##  yaml          2.2.1   2020-02-01 [1] CRAN (R 4.0.2)                
     ## 
-    ## [1] C:/Users/Gustavo/Documents/R/win-library/4.0
+    ## [1] C:/Users/Gustavo/OneDrive - The University of Chicago/Documents/R/win-library/4.0
     ## [2] C:/Program Files/R/R-4.0.2/library
